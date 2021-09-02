@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package api;
+option go_package = "service/api";
+
+// The request message containing the user's name.
+message Request {
+  string path_type = 1;
+  string id = 2;
+}
+
+// The response message containing the greetings
+message Response {
+  string path_type = 1;
+  string header = 2;
+}
+
+// The greeting service definition.
+service ExampleService {
+  // Sends a greeting
+  rpc GenerateHeader (Request) returns (Response) {}
+}
