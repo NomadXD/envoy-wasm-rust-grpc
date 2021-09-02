@@ -1,0 +1,36 @@
+version: '3.7'
+services:
+  proxy:
+    image: envoyproxy/envoy:v1.19.0
+    depends_on:
+      - backend_service
+    networks:
+      - envoymesh
+    ports:
+      - "9095:9095"
+      - "9000:9000"
+    volumes: 
+      - "./build/envoy_wasm_rust_grpc.wasm:/usr/local/bin/envoy_wasm_rust_grpc.wasm"
+      - "./envoy.yaml:/etc/envoy/envoy.yaml"
+    command: envoy -c /etc/envoy/envoy.yaml
+  
+  backend_service:
+    image: solsson/http-echo
+    networks:
+      - envoymesh
+    environment:
+      - PORT=8000
+
+  grpc_service:
+    image: golang:1.16.4
+    volumes: 
+      - "./build/service:/usr/local/bin/service"
+    command: /usr/local/bin/service
+    ports: 
+      - "50051:50051"
+    networks: 
+      - envoymesh
+
+networks:
+  envoymesh:
+    name: envoymesh
